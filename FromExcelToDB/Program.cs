@@ -22,34 +22,95 @@ public class ExcelToDatabase
                 connection.Open();
                 connection.InfoMessage += Connection_InfoMessage; //добавляем обработчик события InfoMessage для получения сообщений от базы данных
 
-              /*  using (var command = new SqlCommand("SET NAMES UTF8", connection))
+                /*  using (var command = new SqlCommand("SET NAMES UTF8", connection))
+                  {
+                      command.ExecuteNonQuery();
+                  }*/
+
+                var firstRow = worksheet.Row(1); //запись значений первой строки таблицы
+
+                //gодготовка словаря для хранения соответствия заголовков столбцов и их индексов
+                var columnHeaders = new Dictionary<string, int>();
+
+                //заполнение словаря соответствия заголовков и нумерации столбцов
+                foreach (var cell in firstRow.Cells())
                 {
-                    command.ExecuteNonQuery();
-                }*/
+                    string columnHeader = cell.Value.ToString();
+                    int columnIndex = cell.Address.ColumnNumber;
+                    columnHeaders[columnHeader] = columnIndex;
+                }
 
-                //проходимся по каждой строке в таблице и записываем данные в базу данных
-                foreach (var row in worksheet.RowsUsed())
+                foreach (var row in worksheet.RowsUsed().Skip(1))
                 {
-                    if (row.RowNumber() == 1)
-                    {
-                        continue; //пропустить первую строку с заголовками столбцов
-                    }
+                    //получение значений для каждого столбца на основе заголовков
+                    string column1Header = "Unique_Id";
+                    string column2Header = "Название";
+                    string column3Header = "Серийный_номер";
+                    string column4Header = "Размещение_адрес";
+                    string column5Header = "Размещение_помещение";
+                    string column6Header = "Тип_КЕ";
 
-                    string column1Value = row.Cell("A").Value.ToString(); //id
-                    string column2Value = row.Cell("D").Value.ToString(); //name
-                    string column3Value = row.Cell("AB").Value.ToString(); //serial number
-                    string column4Value = row.Cell("AE").Value.ToString(); //address
-                    string column5Value = row.Cell("AF").Value.ToString(); //subdivision
-                    string column6Value = row.Cell("I").Value.ToString(); //type_KE
+                    string column1Value = row.Cell(columnHeaders[column1Header]).Value.ToString(); // id
+                    string column2Value = row.Cell(columnHeaders[column2Header]).Value.ToString(); // name
+                    string column3Value = row.Cell(columnHeaders[column3Header]).Value.ToString(); // serial number
+                    string column4Value = row.Cell(columnHeaders[column4Header]).Value.ToString(); // address
+                    string column5Value = row.Cell(columnHeaders[column5Header]).Value.ToString(); // subdivision
+                    string column6Value = row.Cell(columnHeaders[column6Header]).Value.ToString(); // type_KE
 
-                    //выполнение операции вставки в бд
-                    //string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_serial_number, object_address, object_subdivision, object_type) VALUES ({column1Value}, N'{column2Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
+                    // выполнение операции вставки в БД
                     string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
 
                     SqlCommand command = new SqlCommand(insertQuery, connection);
                     command.ExecuteNonQuery();
                 }
-                connection.Close();
+
+                //Console.WriteLine(firstRow.Cell("Unique_Id").Value.ToString());
+
+                /*foreach (var row in worksheet.RowsUsed().Skip(1))
+                {
+
+                    
+                    // Получение значений для каждого столбца на основе заголовков
+                    string column1Value = row.Cell("Unique_Id").Value.ToString(); // id
+                    string column2Value = row.Cell("Название").Value.ToString(); // name
+                    string column3Value = row.Cell("Серийный_номер").Value.ToString(); // serial number
+                    string column4Value = row.Cell("Размещение_адрес").Value.ToString(); // address
+                    string column5Value = row.Cell("Размещение_помещение").Value.ToString(); // subdivision
+                    string column6Value = row.Cell("Тип_КЕ").Value.ToString(); // type_KE
+
+                    string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
+
+                    SqlCommand command = new SqlCommand(insertQuery, connection);
+                    command.ExecuteNonQuery();
+                }*/
+
+                    //проходимся по каждой строке в таблице и записываем данные в базу данных
+                    /*foreach (var row in worksheet.RowsUsed())
+                    {
+                        if (row.RowNumber() == 1)
+                        {
+                            continue; //пропустить первую строку с заголовками столбцов
+                        }
+
+                        string column1Value = row.Cell("A").Value.ToString(); //id
+                        string column2Value = row.Cell("D").Value.ToString(); //name
+                        string column3Value = row.Cell("AB").Value.ToString(); //serial number
+                        string column4Value = row.Cell("AE").Value.ToString(); //address
+                        string column5Value = row.Cell("AF").Value.ToString(); //subdivision
+                        string column6Value = row.Cell("I").Value.ToString(); //type_KE
+
+                        //выполнение операции вставки в бд
+                        //string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_serial_number, object_address, object_subdivision, object_type) VALUES ({column1Value}, N'{column2Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
+                        string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
+
+                        SqlCommand command = new SqlCommand(insertQuery, connection);
+                        command.ExecuteNonQuery();
+                    }*/
+
+
+
+
+                    connection.Close();
             }
         }
     }
