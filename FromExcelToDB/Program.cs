@@ -57,12 +57,37 @@ public class ExcelToDatabase
                     string column5Value = row.Cell(columnHeaders[column5Header]).Value.ToString(); // subdivision
                     string column6Value = row.Cell(columnHeaders[column6Header]).Value.ToString(); // type_KE
 
-                    // выполнение операции вставки в БД
-                    string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
+
+                    //проверка наличия уникального ключа в БД
+                    string selectQuery = $"SELECT COUNT(*) FROM registrated_objects WHERE unique_id = {column1Value}";
+                    SqlCommand selectCommand = new SqlCommand(selectQuery, connection);
+                    int existingCount = (int)selectCommand.ExecuteScalar();
+
+
+                    //при повторе, значение с ключом обновляем, наче добавляем новое значение в таблицу
+                    if (existingCount > 0)
+                    {
+                        // Если запись уже существует, обновляем значения остальных полей
+                        string updateQuery = $"UPDATE registrated_objects SET object_name = N'{column2Value}', object_type = N'{column6Value}', object_serial_number = N'{column3Value}', object_address = N'{column4Value}', object_subdivision = N'{column5Value}' WHERE unique_id = {column1Value}";
+                        SqlCommand updateCommand = new SqlCommand(updateQuery, connection);
+                        updateCommand.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        // Если запись не существует, выполняем операцию вставки
+                        string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
+                        SqlCommand insertCommand = new SqlCommand(insertQuery, connection);
+                        insertCommand.ExecuteNonQuery();
+                    }
+                }
+
+
+               /* // выполнение операции вставки в БД
+                string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
 
                     SqlCommand command = new SqlCommand(insertQuery, connection);
                     command.ExecuteNonQuery();
-                }
+                }*/
 
                 //Console.WriteLine(firstRow.Cell("Unique_Id").Value.ToString());
 
