@@ -44,7 +44,7 @@ public class ExcelToDatabase
 
                     //выполнение операции вставки в бд
                     //string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_serial_number, object_address, object_subdivision, object_type) VALUES ({column1Value}, N'{column2Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
-                    string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, '{column2Value}', '{column6Value}', '{column3Value}', '{column4Value}', '{column5Value}')";
+                    string insertQuery = $"INSERT INTO registrated_objects (unique_id, object_name, object_type, object_serial_number, object_address, object_subdivision) VALUES ({column1Value}, N'{column2Value}', N'{column6Value}', N'{column3Value}', N'{column4Value}', N'{column5Value}')";
 
                     SqlCommand command = new SqlCommand(insertQuery, connection);
                     command.ExecuteNonQuery();
