@@ -10,6 +10,11 @@ public class ExcelToDatabase
 {
     private string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Objects_Identification;Integrated Security=True";
 
+    //метод считывает данные из файла Excel и сохраняет их в базе данных.
+    //параметры:
+    //FilePath: путь к файлу Excel, из которого нужно считать данные.
+    //для работы функции необходимы библиотеки ClosedXML и System.Data.SqlClient.
+
     public void ReadExcelAndSaveToDatabase(string FilePath)
     {
         using (var workbook = new XLWorkbook(FilePath))
@@ -172,7 +177,6 @@ public class ExcelToDatabase
                  {
                      connection.Open();
 
-                     // Проходимся по каждой строке в таблице и записываем данные в базу данных
                      foreach (DataRow row in table.Rows)
                      {
                          string column1Value = row["A"].ToString();
